@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./weather.css";
 import search_icon from "../assets/search.png";
 import clear_icon from "../assets/clear.png";
@@ -9,42 +9,62 @@ import rain_iconn from "../assets/rain.png";
 import snow_iconn from "../assets/snow.png";
 import wind_iconn from "../assets/wind.png";
 const Weather = () => {
+  ///get input data use hoof
+  const inputRef = useRef();
+  ///set data  use hook //
+  const [weatherData, setWeatherData] = useState(false);
   /// fetch API key From online ///
   const search = async (city) => {
     try {
-      const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=
-        8e3f9a6d5629ee879c3ce859ea285de6
-      `;
+      const url = `http://api.weatherapi.com/v1/current.json?key=af246769ca324820bf4122900241412&q=${city}&aqi=no`;
       const response = await fetch(url);
       const data = await response.json();
       console.log(data);
+      setWeatherData({
+        temperatuer: data.current.temp_c,
+        name: data.location.name,
+        humidity: data.current.humidity,
+        windSpeed: data.current.wind_kph,
+        image: data.current.condition.icon,
+        conditionText: data.current.condition.text,
+      });
     } catch (error) {}
   };
 
   useEffect(() => {
-    search("London");
+    search("myanmar");
   }, []);
   return (
     <div className="weather">
       <div className="search-bar">
-        <input type="text" placeholder="Enter Country" />
-        <img src={search_icon} alt="" />
+        <input ref={inputRef} type="text" placeholder="Enter Country" />
+        <img
+          src={search_icon}
+          alt=""
+          onClick={() => search(inputRef.current.value)}
+        />
       </div>
-      <img src={clear_icon} alt="" className="weather-icon" />
-      <p className="temperature">20'C</p>
-      <p className="location">London</p>
+      <img src={weatherData.image} alt="" className="weather-icon" />
+      <span>{weatherData.conditionText} </span>
+      <p className="temperature">{weatherData.temperatuer}'C</p>
+      <p className="location">{weatherData.name}</p>
       <div className="weather-data">
         <div className="col">
           <img src={humidity_iconn} alt="" />
           <div>
-            <p>90 %</p>
+            <p>
+              {" "}
+              <i>{weatherData.humidity}%</i>
+            </p>
             <span>Humidity</span>
           </div>
         </div>
         <div className="col">
           <img src={wind_iconn} alt="" />
           <div>
-            <p>3.6 km/h</p>
+            <p>
+              <i>{weatherData.windSpeed} km/h</i>
+            </p>
             <span>Wind Speed</span>
           </div>
         </div>

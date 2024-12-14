@@ -48,3 +48,7 @@
   display: block;
   margin-top: 10px;
 }
+span {
+  color: #fff;
+  font-size: smaller;
+}
